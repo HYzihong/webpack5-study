@@ -9,8 +9,6 @@
     "prod": "webpack --env production",
     "dev:server": "webpack-dev-server --env development ",
     "commit": "git add -A && git-cz",
-    "build": "webpack",
-    "server": "webpack server",
     "analyzer": "webpack-bundle-analyzer --port 8888 ./dist/stats.json",
     "server:map": "webpack server --devtool source-map"
   },
@@ -27,16 +25,17 @@
   "homepage": "https://github.com/HYzihong/webpack5-study#readme",
   "devDependencies": {
     "bootstrap": "^5.0.1",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
     "cross-env": "^7.0.3",
+    "css-loader": "^5.2.6",
     "cz-conventional-changelog": "^3.3.0",
     "friendly-errors-webpack-plugin": "^1.7.0",
     "html-webpack-plugin": "^5.3.1",
+    "moment": "^2.29.1",
     "node-notifier": "^10.0.0",
     "speed-measure-webpack-plugin": "^1.5.0",
-    "webpack-bundle-analyzer": "^4.4.2",
-    "clean-webpack-plugin": "^4.0.0-alpha.0",
-    "css-loader": "^5.2.6",
     "style-loader": "^2.0.0",
+    "webpack-bundle-analyzer": "^4.4.2",
     "webpack-merge": "^5.8.0"
   },
   "config": {

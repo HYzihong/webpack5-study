@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-10 08:47:13
- * @LastEditTime: 2021-06-10 16:59:36
+ * @LastEditTime: 2021-06-11 05:48:53
  * @LastEditors: Please set LastEditors
  * @Description: 
  * @FilePath: /webpack5/webpack.config.js
@@ -34,7 +34,7 @@ module.exports = (env) => {
         return webpackMerge.merge(baseConfig,productionConfig,{mode:'production'});   
     }else{
         console.log('------development------');
-        console.log(webpackMerge.merge(baseConfig,developmentConfig,{mode:'development'}));
+        // console.log(webpackMerge.merge(baseConfig,developmentConfig,{mode:'development'}));
         return webpackMerge.merge(baseConfig,developmentConfig,{mode:'development'});
     }
 };

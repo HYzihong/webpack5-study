@@ -1,21 +1,20 @@
 /*
  * @Author: your name
  * @Date: 2021-06-10 15:33:12
- * @LastEditTime: 2021-06-10 17:12:04
+ * @LastEditTime: 2021-06-11 07:04:52
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /webpack5/webpack.common.js
  */
 
 const path = require('path')
-const webpackMerge = require('webpack-merge')
-
+const webpack = require('webpack')
+const htmlPlugin = require('html-webpack-plugin')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')//日志美化 更好的错误提示
 const notifier  = require('node-notifier')
 const errorIcon = path.resolve(__dirname,'error.jpg')// notifier error icon
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')//在控制台显示每个依赖打包所花费的时间,方便针对优化
 const smp = new SpeedMeasurePlugin();
-// module.exports = webpackMerge({
 module.exports = smp.wrap({
   mode:'none',// 模式 [development / production / none]
   // devtool:'source-map',//调试工具
@@ -23,7 +22,6 @@ module.exports = smp.wrap({
   // 例子：根目录是app/ ==> context:path.resolve(__dirname, 'app')
   // 也可以 webpack --context
   // Webpack 在寻找相对路径的文件时会以 context 为根目录
-
   entry:'./src/index.js',// 入口起点 默认值是 ./src/index.js
   /*
   Entry 类型:
@@ -38,8 +36,6 @@ module.exports = smp.wrap({
   注意：如果是 array 类型，则搭配 output.library 配置项使用时，只有数组里的最后一个入口文件的模块会被导出。
 
   */ 
-
-
   /*
   
   Chunk 名称
@@ -49,16 +45,16 @@ module.exports = smp.wrap({
     如果 entry 是一个 object，就可能会出现多个 Chunk，这时 Chunk 的名称是 object 键值对里键的名称。
   
   */ 
-
-  
   output:{
     // // 输出文件都放到 dist 目录下
     path: path.resolve(__dirname, '../dist'),//必须是 string 类型的绝对路径
     // 把所有依赖的模块合并输出到一个文件
     filename: '[name].[chunkhash:8].js',
     // filename: '[name].js',// 变量 [name]
-
     /*
+     用hash会报错(node:30768) [DEP_WEBPACK_TEMPLATE_PATH_PLUGIN_REPLACE_PATH_VARIABLES_HASH] DeprecationWarning: [hash] is now [fullhash] (also consider using [chunkhash] or [contenthash], see documentation for details)
+    */
+     /*
     内置变量除了 name 还包括：
       变量名	    含义
       id	      Chunk 的唯一标识，从0开始
@@ -81,20 +77,37 @@ module.exports = smp.wrap({
     // enforceModuleExtension:false,// 在 webpack 5 中被废弃 兼容第三方模块(安装的第三方模块中大多数导入语句没带文件后缀)
     // alias 别名
     alias:{
-      '@bootstrap':path.resolve(__dirname,'node_modules/bootstrap/dist/css/bootstrap.css')
+      '@bootstrap':path.resolve(__dirname,'../node_modules/bootstrap/dist/css/bootstrap.css')
     },
     // 指定查找的目录
     // 配置 Webpack 去哪些目录下寻找第三方模块，默认是只会去 node_modules 目录下寻找。
     modules:['node_modules'],
     // 默认mainFields: ['browser', 'main']
     // 'jsnext:main' 指向的 ES6 模块化语法的文件
-    mainFields:['jsnext:main','main']
-
+    mainFields:['jsnext:main','main'],
+    mainFiles:['index']//如果找不到mainFields的话，会找索引文件index.js 
+  },
+  resolveLoader:{
+    modules:[
+      path.resolve(__dirname,'../loaders'),
+      'node_modules'
+    ]
+  },
+  // 如果我们想引用一个第三方库，但是不想被webpack打包，又不影响我们在程序中以CMD，AMD或者window/global全局等方式进行使用就需要配置 externals
+  externals:{
+    jquery:'jQuery'
   },
   // 模块
   // 在 Webpack 里一切皆模块，一个模块对应着一个文件。Webpack 会从配置的 Entry 开始递归找出所有依赖的模块。
   // 创建模块时，匹配请求的规则数组。这些规则能够修改模块的创建方式。 这些规则能够对模块(module)应用 loader，或者修改解析器(parser)。
   module:{
+    // noParse
+    // 配置哪些模块文件不需要解析
+    // 例如：不需要解析依赖的第三方大型的类库，配置这个字段后会提高构建速度，例如jQuery,loadsh
+    // noParse:/xxx.js/
+    // 注意：noParse忽略的模块文件中不能使用import/require引用其他文件 
+
+    // rules
     // 匹配请求的规则数组
     rules:[
       // 每个规则可以分为三部分 - 条件(condition)，结果(result)和嵌套规则(nested rule)。
@@ -108,7 +121,9 @@ module.exports = smp.wrap({
           // Loader 可以看作具有文件转换功能的翻译员，
           // Loader：模块转换器，用于把模块原内容按照需求转换成新内容。
 
-          
+          // 自己定义的loader
+          'logger-loader',
+
           // 2. 再交给 style-loader 把 CSS 内容注入到 JavaScript 里
           'style-loader',//把style标签插到html
           // 1. 先使用 css-loader 读取 CSS 文件
@@ -187,7 +202,7 @@ module.exports = smp.wrap({
     ]
   },
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
+    contentBase: path.join(__dirname, '../dist'),
     compress: true,//配置是否启用 gzip 压缩 默认为 false
     host: '127.0.0.1', // webpack-dev-server启动时要指定ip，不能直接通过localhost启动，不指定会报错
     port: 7001, // 启动端口为 7001 的服务
@@ -213,6 +228,15 @@ module.exports = smp.wrap({
         })
       },
     }),
-    
+    new htmlPlugin({
+      template:path.join(__dirname, '../src/index.html')
+    }),
+    new webpack.IgnorePlugin({
+      //  IgnorePlugin 用于忽略特定的模块，不打包进来
+      // 不生效的原因就是我的路径不对了
+      resourceRegExp:/^\locale$/,// 资源路径的正则
+      contextRegExp:/moment$/ //资源上下文目录的正则
+    })
+    // 简写new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
   ]
 })

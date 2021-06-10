@@ -1,12 +1,12 @@
 /*
  * @Author: your name
  * @Date: 2021-06-10 09:03:09
- * @LastEditTime: 2021-06-10 16:45:25
+ * @LastEditTime: 2021-06-11 06:43:38
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /webpack5/src/index.js
  */
-console.log(1);
+// console.log(1);
 /*
 
 > webpack5-study@0.0.1 build
@@ -19,3 +19,9 @@ webpack 5.38.1 compiled successfully in 98 ms
 */ 
 
 // require('@bootstrap')
+// let  $ = require('jquery')//window.jQuery
+// console.log($);
+// import './index.css'
+import moment from 'moment'
+import 'moment/dist/locale/zh-cn'
+console.log(moment);
