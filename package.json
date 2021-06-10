@@ -1,0 +1,35 @@
+{
+  "name": "webpack5-study",
+  "version": "0.0.1",
+  "description": "webpack5 study",
+  "main": "index.js",
+  "scripts": {
+    "commit": "git add -A && git-cz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HYzihong/webpack5-study.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HYzihong/webpack5-study/issues"
+  },
+  "homepage": "https://github.com/HYzihong/webpack5-study#readme",
+  "devDependencies": {
+    "cz-conventional-changelog": "^3.3.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "html-webpack-plugin": "^5.3.1",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
+  }
+}
