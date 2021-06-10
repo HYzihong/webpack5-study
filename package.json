@@ -4,7 +4,9 @@
   "description": "webpack5 study",
   "main": "index.js",
   "scripts": {
-    "commit": "git add -A && git-cz"
+    "commit": "git add -A && git-cz",
+    "build": "webpack",
+    "server": "webpack server"
   },
   "repository": {
     "type": "git",
