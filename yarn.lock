@@ -4108,7 +4108,7 @@ webpack-log@^2.0.0:
     ansi-colors "^3.0.0"
     uuid "^3.3.2"
 
-webpack-merge@^5.7.3:
+webpack-merge@^5.7.3, webpack-merge@^5.8.0:
   version "5.8.0"
   resolved "https://registry.nlark.com/webpack-merge/download/webpack-merge-5.8.0.tgz?cache=0&sync_timestamp=1623054906070&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fwebpack-merge%2Fdownload%2Fwebpack-merge-5.8.0.tgz#2b39dbf22af87776ad744c390223731d30a68f61"
   integrity sha1-Kznb8ir4d3atdEw5AiNzHTCmj2E=

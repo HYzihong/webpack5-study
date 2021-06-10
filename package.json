@@ -4,10 +4,13 @@
   "description": "webpack5 study",
   "main": "index.js",
   "scripts": {
+    "dev:model": "webpack --mode=development",
+    "dev:env": "webpack --env development",
+    "prod": "webpack --env production",
+    "dev:server": "webpack-dev-server --env development ",
     "commit": "git add -A && git-cz",
     "build": "webpack",
     "server": "webpack server",
-    "dev": "webpack --progress --color --watch",
     "analyzer": "webpack-bundle-analyzer --port 8888 ./dist/stats.json",
     "server:map": "webpack server --devtool source-map"
   },
@@ -30,7 +33,11 @@
     "html-webpack-plugin": "^5.3.1",
     "node-notifier": "^10.0.0",
     "speed-measure-webpack-plugin": "^1.5.0",
-    "webpack-bundle-analyzer": "^4.4.2"
+    "webpack-bundle-analyzer": "^4.4.2",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "css-loader": "^5.2.6",
+    "style-loader": "^2.0.0",
+    "webpack-merge": "^5.8.0"
   },
   "config": {
     "commitizen": {
@@ -38,9 +45,6 @@
     }
   },
   "dependencies": {
-    "clean-webpack-plugin": "^4.0.0-alpha.0",
-    "css-loader": "^5.2.6",
-    "style-loader": "^2.0.0",
     "webpack": "^5.38.1",
     "webpack-cli": "^4.7.2",
     "webpack-dev-server": "^3.11.2"
