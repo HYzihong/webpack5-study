@@ -6,7 +6,10 @@
   "scripts": {
     "commit": "git add -A && git-cz",
     "build": "webpack",
-    "server": "webpack server"
+    "server": "webpack server",
+    "dev": "webpack --progress --color --watch",
+    "analyzer": "webpack-bundle-analyzer --port 8888 ./dist/stats.json",
+    "server:map": "webpack server --devtool source-map"
   },
   "repository": {
     "type": "git",
@@ -20,7 +23,14 @@
   },
   "homepage": "https://github.com/HYzihong/webpack5-study#readme",
   "devDependencies": {
-    "cz-conventional-changelog": "^3.3.0"
+    "bootstrap": "^5.0.1",
+    "cross-env": "^7.0.3",
+    "cz-conventional-changelog": "^3.3.0",
+    "friendly-errors-webpack-plugin": "^1.7.0",
+    "html-webpack-plugin": "^5.3.1",
+    "node-notifier": "^10.0.0",
+    "speed-measure-webpack-plugin": "^1.5.0",
+    "webpack-bundle-analyzer": "^4.4.2"
   },
   "config": {
     "commitizen": {
@@ -28,8 +38,9 @@
     }
   },
   "dependencies": {
-    "cross-env": "^7.0.3",
-    "html-webpack-plugin": "^5.3.1",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "css-loader": "^5.2.6",
+    "style-loader": "^2.0.0",
     "webpack": "^5.38.1",
     "webpack-cli": "^4.7.2",
     "webpack-dev-server": "^3.11.2"
