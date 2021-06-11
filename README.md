@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-06-10 08:42:05
- * @LastEditTime: 2021-06-10 15:14:33
+ * @LastEditTime: 2021-06-11 10:03:06
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /webpack5/README.md
@@ -35,6 +35,10 @@
 
 1. oneOf
 
+2. 使用缓存提高重复构建的速度
+
+- babel.cacheDirectory babel 缓存
+
 ---
 
 扩展：
@@ -61,3 +65,4 @@ webpack --profile --json > stats.json
 参考：
 
 1. [深入浅出 Webpack](https://webpack.wuhaolin.cn/)
+2. Webpack5 新特性 - 模块联邦[中文](https://zhuanlan.zhihu.com/p/115403616)[英文](https://indepth.dev/posts/1173/webpack-5-module-federation-a-game-changer-in-javascript-architecture#its-important-to-note-these-are-special-entry-points-they-are-only-a-few-kb-in-size-containing-a-special-webpack-runtime-that-can-interface-with-the-host-it-is-not-a-standard-entry-point--7/)

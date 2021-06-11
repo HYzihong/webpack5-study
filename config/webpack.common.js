@@ -1,18 +1,18 @@
 /*
  * @Author: your name
  * @Date: 2021-06-10 15:33:12
- * @LastEditTime: 2021-06-11 07:04:52
+ * @LastEditTime: 2021-06-11 15:18:27
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /webpack5/webpack.common.js
  */
 
 const path = require('path')
+console.log('当前目录 ==> ',path.resolve(__dirname));
 const webpack = require('webpack')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');//每次打包都会先删除dist目录
 const htmlPlugin = require('html-webpack-plugin')
-const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')//日志美化 更好的错误提示
-const notifier  = require('node-notifier')
-const errorIcon = path.resolve(__dirname,'error.jpg')// notifier error icon
+
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')//在控制台显示每个依赖打包所花费的时间,方便针对优化
 const smp = new SpeedMeasurePlugin();
 module.exports = smp.wrap({
@@ -49,7 +49,7 @@ module.exports = smp.wrap({
     // // 输出文件都放到 dist 目录下
     path: path.resolve(__dirname, '../dist'),//必须是 string 类型的绝对路径
     // 把所有依赖的模块合并输出到一个文件
-    filename: '[name].[chunkhash:8].js',
+    filename: 'index.[chunkhash:8].js',
     // filename: '[name].js',// 变量 [name]
     /*
      用hash会报错(node:30768) [DEP_WEBPACK_TEMPLATE_PATH_PLUGIN_REPLACE_PATH_VARIABLES_HASH] DeprecationWarning: [hash] is now [fullhash] (also consider using [chunkhash] or [contenthash], see documentation for details)
@@ -105,12 +105,34 @@ module.exports = smp.wrap({
     // 配置哪些模块文件不需要解析
     // 例如：不需要解析依赖的第三方大型的类库，配置这个字段后会提高构建速度，例如jQuery,loadsh
     // noParse:/xxx.js/
+    // noParse: '/jquery|lodash/',
     // 注意：noParse忽略的模块文件中不能使用import/require引用其他文件 
 
     // rules
     // 匹配请求的规则数组
     rules:[
       // 每个规则可以分为三部分 - 条件(condition)，结果(result)和嵌套规则(nested rule)。
+      {
+        test:/\.js$/,
+        include:path.resolve(__dirname,'../src'),
+        exclude:/node_modules/,//优先级高于include
+        use:[
+          {
+            loader:'thread-loader',
+            // thread-loader 后面的loader都会在一个单独的worker池(worker pool)中运行 
+            // thread-loader 替代废弃的happypake
+            options:{
+              worker:3 
+            }
+          },
+          {
+            loader:'babel-loader',
+            options:{
+              cacheDirectory:true//开启babel缓存
+            }
+          }
+        ]
+      },
       {
         // 用正则去匹配要用该 loader 转换的 CSS 文件
         test:/\.css$/,
@@ -201,42 +223,30 @@ module.exports = smp.wrap({
 
     ]
   },
-  devServer: {
-    contentBase: path.join(__dirname, '../dist'),
-    compress: true,//配置是否启用 gzip 压缩 默认为 false
-    host: '127.0.0.1', // webpack-dev-server启动时要指定ip，不能直接通过localhost启动，不指定会报错
-    port: 7001, // 启动端口为 7001 的服务
-    hot: true,
-    open:true,//用于在 DevServer 启动且第一次构建完时自动用你系统上默认的浏览器去打开要开发的网页。 
-    // 同时还提供 devServer.openPage 配置项用于打开指定 URL 的网页
-    // progress:false,// webpack server --progress好像没啥用
-    proxy:{
-      '/api': 'http://localhost:3000',
-    }
-  },
+  
   plugins:[
     // Plugin：扩展插件，在 Webpack 构建流程中的特定时机注入扩展逻辑来改变构建结果或做你想要的事情。
-    new FriendlyErrorsWebpackPlugin({
-      onErrors:(severity,errors)=>{
-        // console.log('FriendlyErrorsWebpackPlugin',severity,errors);
-        const error = errors[0]
-        notifier.notify({
-          title:'编译失败',
-          subtitle:error.file||'',
-          message:severity+':'+error.name,
-          icon:errorIcon
-        })
-      },
-    }),
+    
     new htmlPlugin({
       template:path.join(__dirname, '../src/index.html')
+      // 生产开启，压缩代码
+      // minify: {
+      //     // 删除html双引号
+      //     removeAttributeQuotes: true,
+      //     // 压缩成一行
+      //     collapseWhitespace: true
+      // },
+      // 文件哈希
+      //hash: true
     }),
-    new webpack.IgnorePlugin({
-      //  IgnorePlugin 用于忽略特定的模块，不打包进来
-      // 不生效的原因就是我的路径不对了
-      resourceRegExp:/^\locale$/,// 资源路径的正则
-      contextRegExp:/moment$/ //资源上下文目录的正则
-    })
+    // new webpack.IgnorePlugin({
+    //   //  IgnorePlugin 用于忽略特定的模块，不打包进来
+    //   // TODO:不生效的原因可能就是我的路径不对了
+    //   resourceRegExp:/^\locale$/,// 资源路径的正则
+    //   contextRegExp:/moment$/ //资源上下文目录的正则
+    // })
     // 简写new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+    // new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn/),
+    new CleanWebpackPlugin(),
   ]
 })
