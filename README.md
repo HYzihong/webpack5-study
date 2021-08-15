@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-06-10 08:42:05
- * @LastEditTime: 2021-06-11 10:03:06
+ * @LastEditTime: 2021-06-15 14:38:35
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /webpack5/README.md
@@ -59,6 +59,11 @@ webpack --profile --json > stats.json
 
 
 ```
+
+---
+
+1. 去除无用代码，是否分片加载（使用什么加载什么，这是不是服务端渲染）
+2. 压缩 html、css、JavaScript
 
 ---
 

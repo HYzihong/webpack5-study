@@ -1,3 +1,7 @@
 *{
   padding: 0;
 }
+/* 无用的css,会被清除 */
+#other{
+  color: rebeccapurple;
+}

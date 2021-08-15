@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-10 15:33:12
- * @LastEditTime: 2021-06-11 15:18:27
+ * @LastEditTime: 2021-06-15 17:21:17
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /webpack5/webpack.common.js
@@ -12,7 +12,9 @@ console.log('当前目录 ==> ',path.resolve(__dirname));
 const webpack = require('webpack')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');//每次打包都会先删除dist目录
 const htmlPlugin = require('html-webpack-plugin')
-
+const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')//日志美化 更好的错误提示
+const notifier  = require('node-notifier')
+const errorIcon = path.resolve(__dirname,'../error.jpg')// notifier error icon
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')//在控制台显示每个依赖打包所花费的时间,方便针对优化
 const smp = new SpeedMeasurePlugin();
 module.exports = smp.wrap({
@@ -97,9 +99,6 @@ module.exports = smp.wrap({
   externals:{
     jquery:'jQuery'
   },
-  // 模块
-  // 在 Webpack 里一切皆模块，一个模块对应着一个文件。Webpack 会从配置的 Entry 开始递归找出所有依赖的模块。
-  // 创建模块时，匹配请求的规则数组。这些规则能够修改模块的创建方式。 这些规则能够对模块(module)应用 loader，或者修改解析器(parser)。
   module:{
     // noParse
     // 配置哪些模块文件不需要解析
@@ -133,46 +132,51 @@ module.exports = smp.wrap({
           }
         ]
       },
-      {
-        // 用正则去匹配要用该 loader 转换的 CSS 文件
-        test:/\.css$/,
-        use:[
-          // use 属性的值需要是一个由 Loader 名称组成的数组，Loader 的执行顺序是由后到前的；
-          // 注意：执行顺序是由后到前的
+      // {
+      //   // 用正则去匹配要用该 loader 转换的 CSS 文件
+      //   test:/\.css$/,
+      //   use:[
+      //     // use 属性的值需要是一个由 Loader 名称组成的数组，Loader 的执行顺序是由后到前的；
+      //     // 注意：执行顺序是由后到前的
 
-          // Loader 可以看作具有文件转换功能的翻译员，
-          // Loader：模块转换器，用于把模块原内容按照需求转换成新内容。
+      //     // Loader 可以看作具有文件转换功能的翻译员，
+      //     // Loader：模块转换器，用于把模块原内容按照需求转换成新内容。
 
-          // 自己定义的loader
-          'logger-loader',
+      //     'cache-loader',
+      //     // 将一些开销大的loader的结果缓存到磁盘（node_modules/.cache/cache-loader）
+      //     // 位置放于性能开销大的loader之后
 
-          // 2. 再交给 style-loader 把 CSS 内容注入到 JavaScript 里
-          'style-loader',//把style标签插到html
-          // 1. 先使用 css-loader 读取 CSS 文件
-          'css-loader'// 解析css语法
-          /*
-          https://github.com/webpack-contrib/css-loader
-          // 每一个 Loader 都可以通过 URL querystring 的方式传入参数，例如 css-loader?minimize 中的 minimize 告诉 css-loader 要开启 CSS 压缩。
-          加上参数 css-loader?minimize会报错 
-          {
-            loader:'css-loader',
-            options:{
-              minimize:true,
-            }
-          }
-          ERROR in ./node_modules/bootstrap/dist/css/bootstrap.css (./node_modules/css-loader/dist/cjs.js?minimize!./node_modules/bootstrap/dist/css/bootstrap.css)
-          Module build failed (from ./node_modules/css-loader/dist/cjs.js):
-          ValidationError: Invalid options object. CSS Loader has been initialized using an options object that does not match the API schema.
-          - options has an unknown property 'minimize'. These properties are valid:
-            object { url?, import?, modules?, sourceMap?, importLoaders?, esModule? }
-              at validate (/Users/hy/code/vue/webpack/webpack5/node_modules/schema-utils/dist/validate.js:104:11)
-              at Object.loader (/Users/hy/code/vue/webpack/webpack5/node_modules/css-loader/dist/index.js:36:29)
-          @ ./node_modules/bootstrap/dist/css/bootstrap.css 2:12-93 9:17-24 13:15-29
-          @ ./src/index.js 21:0-20
+
+      //     // 自己定义的loader
+      //     'logger-loader',
+
+      //     // 2. 再交给 style-loader 把 CSS 内容注入到 JavaScript 里
+      //     'style-loader',//把style标签插到html
+      //     // 1. 先使用 css-loader 读取 CSS 文件
+      //     'css-loader'// 解析css语法
+      //     /*
+      //     https://github.com/webpack-contrib/css-loader
+      //     // 每一个 Loader 都可以通过 URL querystring 的方式传入参数，例如 css-loader?minimize 中的 minimize 告诉 css-loader 要开启 CSS 压缩。
+      //     加上参数 css-loader?minimize会报错 
+      //     {
+      //       loader:'css-loader',
+      //       options:{
+      //         minimize:true,
+      //       }
+      //     }
+      //     ERROR in ./node_modules/bootstrap/dist/css/bootstrap.css (./node_modules/css-loader/dist/cjs.js?minimize!./node_modules/bootstrap/dist/css/bootstrap.css)
+      //     Module build failed (from ./node_modules/css-loader/dist/cjs.js):
+      //     ValidationError: Invalid options object. CSS Loader has been initialized using an options object that does not match the API schema.
+      //     - options has an unknown property 'minimize'. These properties are valid:
+      //       object { url?, import?, modules?, sourceMap?, importLoaders?, esModule? }
+      //         at validate (/Users/hy/code/vue/webpack/webpack5/node_modules/schema-utils/dist/validate.js:104:11)
+      //         at Object.loader (/Users/hy/code/vue/webpack/webpack5/node_modules/css-loader/dist/index.js:36:29)
+      //     @ ./node_modules/bootstrap/dist/css/bootstrap.css 2:12-93 9:17-24 13:15-29
+      //     @ ./src/index.js 21:0-20
           
-          */ 
-        ]
-      },
+      //     */ 
+      //   ]
+      // },
       // oneOf 唯一匹配
       // oneOf 当匹配到一个loader后则不再匹配其他的loader
       // 优化手段之一：处理性能更好
@@ -228,16 +232,28 @@ module.exports = smp.wrap({
     // Plugin：扩展插件，在 Webpack 构建流程中的特定时机注入扩展逻辑来改变构建结果或做你想要的事情。
     
     new htmlPlugin({
-      template:path.join(__dirname, '../src/index.html')
+      template:path.join(__dirname, '../src/index.html'),
       // 生产开启，压缩代码
-      // minify: {
-      //     // 删除html双引号
-      //     removeAttributeQuotes: true,
-      //     // 压缩成一行
-      //     collapseWhitespace: true
-      // },
+      // 压缩HTML
+      minify: {
+          // 删除html双引号
+          removeAttributeQuotes: true,
+          // 去除空格，压缩成一行
+          collapseWhitespace: true,
+          // 去除注释
+          removeComments:true,
+          // removeRedundantAttributes: true,
+          // useShortDoctype: true,
+          // removeEmptyAttributes: true,
+          // removeStyleLinkTypeAttributes: true,
+          // keepClosingSlash: true,
+          minifyJS: true,
+          //  压缩内联css
+          minifyCSS: true,
+          // minifyURLs: true,
+      },
       // 文件哈希
-      //hash: true
+      hash: true
     }),
     // new webpack.IgnorePlugin({
     //   //  IgnorePlugin 用于忽略特定的模块，不打包进来
@@ -247,6 +263,23 @@ module.exports = smp.wrap({
     // })
     // 简写new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
     // new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn/),
-    new CleanWebpackPlugin(),
+    new CleanWebpackPlugin(
+      // {
+      //   cleanAfterEveryBuildPatterns:['dist']
+      // }
+    ),
+    new FriendlyErrorsWebpackPlugin({
+      onErrors:(severity,errors)=>{
+        // console.log('FriendlyErrorsWebpackPlugin',severity,errors);
+        const error = errors[0]
+        notifier.notify({
+          title:'编译失败:',
+          subtitle:error.file||'',
+          message:severity+':'+error.name,
+          icon:errorIcon
+        })
+      },
+    }),
+   
   ]
 })
